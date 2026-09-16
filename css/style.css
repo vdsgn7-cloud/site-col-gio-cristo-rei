@@ -143,7 +143,7 @@ nav.main > a:hover::after{width:100%;}
 .hero-stats .stat b{display:block;font-family:'Fraunces',serif;font-size:30px;color:var(--navy);font-weight:600;}
 .hero-stats .stat span{font-size:13px;color:var(--ink-soft);}
 .hero-media{position:relative;}
-.hero-media .frame{border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);aspect-ratio:4/3.6;position:relative;}
+.hero-media .frame{border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);aspect-ratio:4/3.6;position:relative;z-index:1;}
 .hero-media .frame img{width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .7s cubic-bezier(.2,.7,.2,1);}
 @media(max-width:920px){.hero-media .frame{aspect-ratio:16/10;}}
 
@@ -166,19 +166,25 @@ nav.main > a:hover::after{width:100%;}
 .hero-media:hover .frame-overlay{opacity:1;}
 .hero-media:hover .frame-overlay span,
 .hero-media:hover .frame-overlay a{transform:translateY(0);}
-@media (prefers-reduced-motion: reduce){
-  .hero-media .frame img, .frame-overlay, .frame-overlay span, .frame-overlay a{transition:none;}
-}
 
-/* bolhas orbitando a imagem, nas cores da escola */
+/* bolhas flutuantes nas cores da escola, ligadas à foto por linhas tracejadas */
+@keyframes float-badge{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-9px);}
+}
+@keyframes float-badge-centered{
+  0%,100%{transform:translateY(-50%) translateY(0);}
+  50%{transform:translateY(-50%) translateY(-10px);}
+}
 .hero-media .float-card{
   position:absolute;background:var(--white);border-radius:var(--radius-md);
   box-shadow:var(--shadow);display:flex;align-items:center;gap:14px;max-width:250px;
-  transition:transform .3s ease, box-shadow .3s ease;
-  z-index:2;
+  transition:box-shadow .3s ease;
+  animation:float-badge 4.4s ease-in-out infinite;
+  z-index:3;
 }
-.hero-media:hover .float-card{transform:translateY(-3px);box-shadow:0 30px 60px -28px rgba(18,36,56,.55);}
-.hero-media .float-card.node-bl{left:-34px;bottom:36px;padding:18px 22px;}
+.hero-media:hover .float-card{box-shadow:0 30px 60px -28px rgba(18,36,56,.55);}
+.hero-media .float-card.node-bl{left:-34px;bottom:36px;padding:18px 22px;animation-delay:.7s;}
 .hero-media .float-card .icon{width:42px;height:42px;border-radius:50%;background:var(--paper-2);display:flex;align-items:center;justify-content:center;flex:none;color:var(--green);}
 .hero-media .float-card .icon svg{width:22px;height:22px;}
 .hero-media .float-card b{display:block;font-size:14px;color:var(--navy);font-family:'Fraunces',serif;font-weight:600;}
@@ -190,21 +196,38 @@ nav.main > a:hover::after{width:100%;}
 }
 .hero-media .float-card.mini b{font-size:20px;color:var(--green);}
 .hero-media .float-card.mini span{font-size:11.5px;color:var(--ink-soft);white-space:nowrap;}
-.hero-media .float-card.node-tl{top:-22px;left:-24px;}
+.hero-media .float-card.node-tl{top:-22px;left:-22px;animation-delay:0s;}
 .hero-media .float-card.node-tl b{color:var(--gold-dark);}
-.hero-media .float-card.node-tr{top:36px;right:-40px;}
-.hero-media .float-card.node-br{bottom:-18px;right:-22px;}
+.hero-media .float-card.node-tr{top:-22px;right:-22px;animation-delay:1.4s;}
+.hero-media .float-card.node-br{bottom:-22px;right:-22px;animation-delay:2.1s;}
 .hero-media .float-card.node-br b{color:var(--navy);}
 
-/* linhas tracejadas conectando a foto às bolhas */
-.orbit-line{position:absolute;border-top:2px dashed rgba(18,36,56,0.28);width:70px;z-index:1;}
-.orbit-line.line-tl{top:14px;left:-16px;transform:rotate(38deg);transform-origin:left center;}
-.orbit-line.line-tr{top:58px;right:-30px;width:56px;transform:rotate(-30deg);transform-origin:right center;}
-.orbit-line.line-bl{bottom:70px;left:-16px;width:56px;transform:rotate(-30deg);transform-origin:left center;}
-.orbit-line.line-br{bottom:14px;right:-14px;transform:rotate(32deg);transform-origin:right center;}
+.hero-media .float-card.logo-badge{
+  top:50%;right:-46px;width:92px;height:92px;padding:12px;border-radius:50%;
+  border:3px solid var(--gold);justify-content:center;
+  animation:float-badge-centered 4.8s ease-in-out infinite;animation-delay:2.6s;
+}
+.hero-media .float-card.logo-badge img{width:100%;height:100%;object-fit:contain;}
+
+@media (prefers-reduced-motion: reduce){
+  .hero-media .frame img, .frame-overlay, .frame-overlay span, .frame-overlay a,
+  .hero-media .float-card{transition:none;animation:none;}
+}
+
+/* linhas tracejadas: partem exatamente do canto da foto até a bolha */
+.orbit-line{
+  position:absolute;width:31px;height:0;
+  border-top:2px dashed rgba(18,36,56,0.32);
+  transform-origin:0 50%;
+  z-index:2;pointer-events:none;
+}
+.orbit-line.line-tl{top:0;left:0;transform:rotate(225deg);}
+.orbit-line.line-tr{top:0;left:100%;transform:rotate(315deg);}
+.orbit-line.line-br{top:100%;left:100%;transform:rotate(45deg);}
 
 @media(max-width:1180px){
-  .hero-media .float-card.node-tl,.hero-media .float-card.node-tr,.hero-media .float-card.node-br,
+  .hero-media .float-card.node-tl,.hero-media .float-card.node-tr,
+  .hero-media .float-card.node-br,.hero-media .float-card.logo-badge,
   .orbit-line{display:none;}
 }
 @media(max-width:920px){
