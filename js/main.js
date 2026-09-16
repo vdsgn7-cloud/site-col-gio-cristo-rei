@@ -81,4 +81,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // carrossel de fotos — troca automática com crossfade, pausa no hover
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.carousel').forEach(carousel => {
+    const slides = Array.from(carousel.querySelectorAll('.carousel-slide'));
+    const dots = Array.from(carousel.querySelectorAll('.carousel-dots .dot'));
+    if(slides.length < 2) return;
+    let current = Math.max(slides.findIndex(s => s.classList.contains('is-active')), 0);
+    let timer = null;
+
+    function goTo(index){
+      slides[current].classList.remove('is-active');
+      if(dots[current]) dots[current].classList.remove('is-active');
+      current = (index + slides.length) % slides.length;
+      slides[current].classList.add('is-active');
+      if(dots[current]) dots[current].classList.add('is-active');
+    }
+    function start(){
+      if(reduceMotion) return;
+      stop();
+      timer = setInterval(() => goTo(current + 1), 4200);
+    }
+    function stop(){
+      if(timer){ clearInterval(timer); timer = null; }
+    }
+    dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); start(); }));
+    carousel.addEventListener('mouseenter', stop);
+    carousel.addEventListener('mouseleave', start);
+    start();
+  });
+
 });
