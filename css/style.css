@@ -124,9 +124,9 @@ nav.main > a:hover::after{width:100%;}
 .page-hero h1{font-size:clamp(30px,4.4vw,50px);max-width:760px;}
 .page-hero p.lead{margin-top:18px;color:var(--ink-soft);font-size:17px;max-width:600px;line-height:1.65;}
 .page-hero.with-media{padding-bottom:0;}
-.page-hero-media{margin-top:44px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);aspect-ratio:21/8;}
-.page-hero-media img{width:100%;height:100%;object-fit:cover;}
-@media(max-width:640px){.page-hero-media{aspect-ratio:4/3;}}
+.page-hero-media{margin-top:44px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);aspect-ratio:16/9;max-height:520px;}
+.page-hero-media img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;}
+@media(max-width:640px){.page-hero-media{aspect-ratio:4/3.6;max-height:none;}}
 
 /* ---------- hero home ---------- */
 .hero{padding:56px 0 0;overflow:hidden;}
@@ -143,17 +143,76 @@ nav.main > a:hover::after{width:100%;}
 .hero-stats .stat b{display:block;font-family:'Fraunces',serif;font-size:30px;color:var(--navy);font-weight:600;}
 .hero-stats .stat span{font-size:13px;color:var(--ink-soft);}
 .hero-media{position:relative;}
-.hero-media .frame{border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);aspect-ratio:4/4.6;}
-.hero-media .frame img{width:100%;height:100%;object-fit:cover;}
-.hero-media .float-card{position:absolute;left:-34px;bottom:36px;background:var(--white);border-radius:var(--radius-md);padding:18px 22px;box-shadow:var(--shadow);display:flex;align-items:center;gap:14px;max-width:250px;}
+.hero-media .frame{border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);aspect-ratio:4/3.6;position:relative;}
+.hero-media .frame img{width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .7s cubic-bezier(.2,.7,.2,1);}
+@media(max-width:920px){.hero-media .frame{aspect-ratio:16/10;}}
+
+/* overlay que aparece por cima da foto no hover, sem escondê-la */
+.frame-overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;
+  padding:26px;
+  background:linear-gradient(200deg, rgba(18,36,56,0.05) 0%, rgba(18,36,56,0.78) 100%);
+  opacity:0;transition:opacity .4s ease;
+}
+.frame-overlay span{color:var(--white);font-family:'Fraunces',serif;font-size:18px;font-weight:600;transform:translateY(14px);transition:transform .45s ease;}
+.frame-overlay a{
+  display:inline-flex;align-items:center;gap:8px;color:var(--white);font-weight:700;font-size:14px;
+  background:var(--gold);color:var(--navy);padding:10px 18px;border-radius:100px;width:fit-content;
+  transform:translateY(14px);transition:transform .45s ease .05s, background .2s;
+}
+.frame-overlay a:hover{background:#fff;}
+.frame-overlay a svg{width:15px;height:15px;}
+.hero-media:hover .frame img{transform:scale(1.07);}
+.hero-media:hover .frame-overlay{opacity:1;}
+.hero-media:hover .frame-overlay span,
+.hero-media:hover .frame-overlay a{transform:translateY(0);}
+@media (prefers-reduced-motion: reduce){
+  .hero-media .frame img, .frame-overlay, .frame-overlay span, .frame-overlay a{transition:none;}
+}
+
+/* bolhas orbitando a imagem, nas cores da escola */
+.hero-media .float-card{
+  position:absolute;background:var(--white);border-radius:var(--radius-md);
+  box-shadow:var(--shadow);display:flex;align-items:center;gap:14px;max-width:250px;
+  transition:transform .3s ease, box-shadow .3s ease;
+  z-index:2;
+}
+.hero-media:hover .float-card{transform:translateY(-3px);box-shadow:0 30px 60px -28px rgba(18,36,56,.55);}
+.hero-media .float-card.node-bl{left:-34px;bottom:36px;padding:18px 22px;}
 .hero-media .float-card .icon{width:42px;height:42px;border-radius:50%;background:var(--paper-2);display:flex;align-items:center;justify-content:center;flex:none;color:var(--green);}
 .hero-media .float-card .icon svg{width:22px;height:22px;}
 .hero-media .float-card b{display:block;font-size:14px;color:var(--navy);font-family:'Fraunces',serif;font-weight:600;}
 .hero-media .float-card span{font-size:12.5px;color:var(--ink-soft);}
+
+.hero-media .float-card.mini{
+  flex-direction:column;align-items:flex-start;gap:2px;padding:14px 20px;border-radius:100px;
+  border:1px solid var(--line);
+}
+.hero-media .float-card.mini b{font-size:20px;color:var(--green);}
+.hero-media .float-card.mini span{font-size:11.5px;color:var(--ink-soft);white-space:nowrap;}
+.hero-media .float-card.node-tl{top:-22px;left:-24px;}
+.hero-media .float-card.node-tl b{color:var(--gold-dark);}
+.hero-media .float-card.node-tr{top:36px;right:-40px;}
+.hero-media .float-card.node-br{bottom:-18px;right:-22px;}
+.hero-media .float-card.node-br b{color:var(--navy);}
+
+/* linhas tracejadas conectando a foto às bolhas */
+.orbit-line{position:absolute;border-top:2px dashed rgba(18,36,56,0.28);width:70px;z-index:1;}
+.orbit-line.line-tl{top:14px;left:-16px;transform:rotate(38deg);transform-origin:left center;}
+.orbit-line.line-tr{top:58px;right:-30px;width:56px;transform:rotate(-30deg);transform-origin:right center;}
+.orbit-line.line-bl{bottom:70px;left:-16px;width:56px;transform:rotate(-30deg);transform-origin:left center;}
+.orbit-line.line-br{bottom:14px;right:-14px;transform:rotate(32deg);transform-origin:right center;}
+
+@media(max-width:1180px){
+  .hero-media .float-card.node-tl,.hero-media .float-card.node-tr,.hero-media .float-card.node-br,
+  .orbit-line{display:none;}
+}
+@media(max-width:920px){
+  .hero-media .float-card.node-bl{left:14px;bottom:-24px;}
+}
 @media(max-width:920px){
   .hero-grid{grid-template-columns:1fr;gap:40px;}
   .hero-media{order:-1;}
-  .hero-media .float-card{left:14px;bottom:-24px;}
 }
 
 /* ---------- quote / why ---------- */
@@ -198,7 +257,7 @@ nav.main > a:hover::after{width:100%;}
 .seg-card{background:var(--white);border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-soft);display:flex;flex-direction:column;transition:transform .35s ease;}
 .seg-card:hover{transform:translateY(-8px);}
 .seg-card .ph{aspect-ratio:16/11;overflow:hidden;}
-.seg-card .ph img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;}
+.seg-card .ph img{width:100%;height:100%;object-fit:cover;object-position:50% 25%;transition:transform .6s ease;}
 .seg-card:hover .ph img{transform:scale(1.06);}
 .seg-card .body{padding:26px 26px 28px;display:flex;flex-direction:column;gap:12px;flex:1;}
 .seg-card .stage{font-size:12.5px;font-weight:700;color:var(--green);}

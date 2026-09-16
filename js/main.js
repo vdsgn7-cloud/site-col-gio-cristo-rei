@@ -20,8 +20,18 @@ document.addEventListener('DOMContentLoaded', () => {
     mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
   }
 
-  // reveal on scroll
-  const revealEls = document.querySelectorAll('.reveal');
+  // reveal on scroll — elementos que dividem o mesmo pai (cards de uma
+  // grade, fotos da galeria, itens da timeline etc.) ganham um pequeno
+  // atraso crescente para aparecerem em cascata, um depois do outro.
+  const revealEls = Array.from(document.querySelectorAll('.reveal'));
+  const siblingIndex = new Map();
+  revealEls.forEach(el => {
+    const parent = el.parentElement;
+    const i = siblingIndex.get(parent) || 0;
+    if(i > 0){ el.style.transitionDelay = (Math.min(i, 6) * 90) + 'ms'; }
+    siblingIndex.set(parent, i + 1);
+  });
+
   if('IntersectionObserver' in window && revealEls.length){
     const io = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -30,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
           io.unobserve(entry.target);
         }
       });
-    }, {threshold:0.15});
+    }, {threshold:0.15, rootMargin:'0px 0px -40px 0px'});
     revealEls.forEach(el => io.observe(el));
   } else {
     revealEls.forEach(el => el.classList.add('in'));
