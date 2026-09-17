@@ -277,13 +277,12 @@ nav.main > a:hover::after{width:100%;}
 @media (prefers-reduced-motion: reduce){.mosaic-tile img{transition:none;}}
 
 .insta-live{background:var(--paper-2);padding:90px 0;}
-.insta-placeholder{
-  max-width:520px;margin:0 auto;background:var(--white);border:1px dashed var(--line);
-  border-radius:var(--radius-lg);padding:48px 32px;text-align:center;
-  display:flex;flex-direction:column;align-items:center;gap:16px;
+.insta-frame{
+  max-width:720px;margin:0 auto;background:var(--white);border:1px solid var(--line);
+  border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-soft);
 }
-.insta-placeholder svg{width:38px;height:38px;color:var(--navy-2);}
-.insta-placeholder p{color:var(--ink-soft);font-size:14.5px;line-height:1.6;max-width:360px;}
+.insta-frame iframe{width:100%;height:500px;border:0;display:block;}
+@media(max-width:480px){.insta-frame iframe{height:420px;}}
 
 .gal-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:150px;gap:14px;}
 .gal-grid a{border-radius:14px;overflow:hidden;position:relative;display:block;}
