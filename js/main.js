@@ -35,10 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if('IntersectionObserver' in window && revealEls.length){
     const io = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if(entry.isIntersecting){
-          entry.target.classList.add('in');
-          io.unobserve(entry.target);
-        }
+        entry.target.classList.toggle('in', entry.isIntersecting);
       });
     }, {threshold:0.15, rootMargin:'0px 0px -40px 0px'});
     revealEls.forEach(el => io.observe(el));
@@ -81,34 +78,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // carrossel de fotos — troca automática com crossfade, pausa no hover
+  // mosaico de fotos — cada bloco troca de foto sozinho, com um atraso
+  // diferente por bloco, criando uma "parede viva" sem piscar tudo junto
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  document.querySelectorAll('.carousel').forEach(carousel => {
-    const slides = Array.from(carousel.querySelectorAll('.carousel-slide'));
-    const dots = Array.from(carousel.querySelectorAll('.carousel-dots .dot'));
-    if(slides.length < 2) return;
-    let current = Math.max(slides.findIndex(s => s.classList.contains('is-active')), 0);
-    let timer = null;
-
-    function goTo(index){
-      slides[current].classList.remove('is-active');
-      if(dots[current]) dots[current].classList.remove('is-active');
-      current = (index + slides.length) % slides.length;
-      slides[current].classList.add('is-active');
-      if(dots[current]) dots[current].classList.add('is-active');
-    }
-    function start(){
-      if(reduceMotion) return;
-      stop();
-      timer = setInterval(() => goTo(current + 1), 4200);
-    }
-    function stop(){
-      if(timer){ clearInterval(timer); timer = null; }
-    }
-    dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); start(); }));
-    carousel.addEventListener('mouseenter', stop);
-    carousel.addEventListener('mouseleave', start);
-    start();
+  document.querySelectorAll('.mosaic-tile').forEach((tile, tileIndex) => {
+    const imgs = Array.from(tile.querySelectorAll('img'));
+    if(imgs.length < 2 || reduceMotion) return;
+    let current = Math.max(imgs.findIndex(i => i.classList.contains('is-active')), 0);
+    const delay = tileIndex * 900;
+    setTimeout(() => {
+      setInterval(() => {
+        imgs[current].classList.remove('is-active');
+        current = (current + 1) % imgs.length;
+        imgs[current].classList.add('is-active');
+      }, 5000);
+    }, delay);
   });
 
 });
