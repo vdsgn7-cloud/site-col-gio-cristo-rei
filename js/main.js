@@ -78,21 +78,98 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // mosaico de fotos — cada bloco troca de foto sozinho, com um atraso
-  // diferente por bloco, criando uma "parede viva" sem piscar tudo junto
+  // ---------------------------------------------------------------
+  // "Corredor" 3D de fotos — duas fileiras de cards vindo do fundo
+  // em direção à tela, com perspectiva. Portado para JS puro (sem
+  // React/Spline) a partir da lógica de projeção: cada card cresce
+  // geometricamente conforme se aproxima, e as fileiras abrem para
+  // os lados a partir do centro.
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  document.querySelectorAll('.mosaic-tile').forEach((tile, tileIndex) => {
-    const imgs = Array.from(tile.querySelectorAll('img'));
-    if(imgs.length < 2 || reduceMotion) return;
-    let current = Math.max(imgs.findIndex(i => i.classList.contains('is-active')), 0);
-    const delay = tileIndex * 900;
-    setTimeout(() => {
-      setInterval(() => {
-        imgs[current].classList.remove('is-active');
-        current = (current + 1) % imgs.length;
-        imgs[current].classList.add('is-active');
-      }, 5000);
-    }, delay);
-  });
+
+  function buildStreamKeyframes(dir, name, p){
+    const steps = [];
+    for(let s = 0; s <= p.stops; s++){
+      const u = s / p.stops;
+      const scale = (p.birthHeight / p.cardHeight) * Math.pow(p.exitHeight / p.birthHeight, u);
+      const z = p.perspective * (1 - 1 / scale);
+      const rail = p.railExit - (p.railExit - p.railBirth) * Math.pow(1 - u, p.fan);
+      const turn = p.turnBirth + (p.turnExit - p.turnBirth) * u;
+      steps.push(`${(u * 100).toFixed(2)}%{transform:translate3d(${(dir * rail).toFixed(2)}cqw,0,${z.toFixed(2)}cqw) rotateY(${(-dir * turn).toFixed(2)}deg)}`);
+    }
+    return `@keyframes ${name}{${steps.join('')}}`;
+  }
+
+  function initImageStream(container, images, opts){
+    if(!container || !images.length) return;
+    const p = Object.assign({
+      perspective:30, cardWidth:20, cardHeight:26, cardRadius:0.7,
+      birthHeight:2.8, exitHeight:48, railBirth:-11, railExit:44,
+      fan:3.3, turnBirth:6, turnExit:28, stops:24
+    }, opts.path || {});
+    const cards = opts.cards || 8;
+    const speed = opts.speed || 16;
+    const axis = opts.axis || 52;
+    const id = 'is' + Math.random().toString(36).slice(2, 9);
+    const rightName = 'isr-' + id, leftName = 'isl-' + id, cardClass = 'iscard-' + id;
+
+    const styleEl = document.createElement('style');
+    styleEl.textContent = buildStreamKeyframes(1, rightName, p) + buildStreamKeyframes(-1, leftName, p) +
+      `.${cardClass}{position:absolute;left:50%;top:${axis}%;width:${p.cardWidth}cqw;height:${p.cardHeight}cqw;` +
+      `margin-left:${-p.cardWidth / 2}cqw;margin-top:${-p.cardHeight / 2}cqw;border-radius:${p.cardRadius}cqw;` +
+      `overflow:hidden;backface-visibility:hidden;box-shadow:0 20px 40px -20px rgba(0,0,0,.6);}` +
+      `.${cardClass} img{width:100%;height:100%;object-fit:cover;display:block;}` +
+      `@media(prefers-reduced-motion:reduce){.${cardClass}{animation-play-state:paused;}}`;
+    document.head.appendChild(styleEl);
+
+    container.style.containerType = 'inline-size';
+
+    const stage = document.createElement('div');
+    stage.setAttribute('aria-hidden', 'true');
+    stage.style.cssText = `position:absolute;inset:0;pointer-events:none;perspective:${p.perspective}cqw;perspective-origin:50% ${axis}%;`;
+
+    const inner = document.createElement('div');
+    inner.style.cssText = 'position:absolute;inset:0;transform-style:preserve-3d;';
+
+    [rightName, leftName].forEach((name) => {
+      for(let i = 0; i < cards; i++){
+        const img = images[i % images.length];
+        const card = document.createElement('div');
+        card.className = cardClass;
+        card.style.animation = reduceMotion ? 'none' : `${name} ${speed}s linear infinite`;
+        card.style.animationDelay = (-(i * speed) / cards) + 's';
+        if(reduceMotion){
+          const u = (i / cards);
+          const scale = (p.birthHeight / p.cardHeight) * Math.pow(p.exitHeight / p.birthHeight, u);
+          const z = p.perspective * (1 - 1 / scale);
+          const dir = name === rightName ? 1 : -1;
+          const rail = p.railExit - (p.railExit - p.railBirth) * Math.pow(1 - u, p.fan);
+          const turn = p.turnBirth + (p.turnExit - p.turnBirth) * u;
+          card.style.transform = `translate3d(${(dir * rail).toFixed(2)}cqw,0,${z.toFixed(2)}cqw) rotateY(${(-dir * turn).toFixed(2)}deg)`;
+        }
+        const im = document.createElement('img');
+        im.src = img.src; im.alt = img.alt || ''; im.loading = 'lazy'; im.decoding = 'async';
+        card.appendChild(im);
+        inner.appendChild(card);
+      }
+    });
+
+    stage.appendChild(inner);
+    container.appendChild(stage);
+  }
+
+  const streamContainer = document.getElementById('schoolStream');
+  if(streamContainer){
+    const base = 'https://cristoreieduca.com.br/wp-content/uploads/2020/12/';
+    initImageStream(streamContainer, [
+      {src: base + 'Ensino-Fundamental-I-7-scaled.jpg', alt:'Ensino Fundamental'},
+      {src: base + 'Educacao-Infantil-22-scaled.jpg', alt:'Educação Infantil'},
+      {src: base + 'Ensino-Fundamental-II-4-scaled.jpg', alt:'Ensino Fundamental II'},
+      {src: base + 'Ensino-Fundamental-I-21-scaled.jpg', alt:'Ensino Fundamental'},
+      {src: base + 'Ensino-Fundamental-II-25-scaled.jpg', alt:'Ensino Fundamental II'},
+      {src: base + 'Educacao-Infantil-12-1-scaled.jpg', alt:'Educação Infantil'},
+      {src: base + 'Educacao-Infantil-7-scaled.jpg', alt:'Educação Infantil'},
+      {src: base + 'Ensino-Fundamental-I-8-scaled.jpg', alt:'Ensino Fundamental'}
+    ], {cards:8, speed:16, axis:52});
+  }
 
 });
