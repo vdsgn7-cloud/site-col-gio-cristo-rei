@@ -2,20 +2,20 @@
    Colégio Cristo Rei — folha de estilos principal
    ========================================================= */
 :root{
-  --navy:#122438;
-  --navy-2:#1b3a56;
-  --paper:#FAF7EF;
-  --paper-2:#F1ECDF;
+  --navy:#253D8B;
+  --navy-2:#0F1B3D;
+  --paper:#FFFFFF;
+  --paper-2:#A3CDEF;
   --ink:#1c2a33;
   --ink-soft:#4c5b63;
-  --gold:#D6A441;
-  --gold-dark:#B4842A;
-  --line: rgba(18,36,56,0.12);
+  --gold:#FEEC00;
+  --gold-dark:#8A7300;
+  --line: rgba(37,61,139,0.12);
   --white:#ffffff;
   --radius-lg: 28px;
   --radius-md: 16px;
-  --shadow: 0 24px 60px -30px rgba(18,36,56,0.45);
-  --shadow-soft: 0 14px 34px -20px rgba(18,36,56,0.35);
+  --shadow: 0 24px 60px -30px rgba(37,61,139,0.45);
+  --shadow-soft: 0 14px 34px -20px rgba(37,61,139,0.35);
   --maxw: 1180px;
 }
 *{box-sizing:border-box;}
@@ -62,12 +62,12 @@ section{position:relative;}
 /* ---------- header / nav ---------- */
 header.site{
   position:sticky;top:0;z-index:80;
-  background:rgba(250,247,239,0.92);
+  background:rgba(255,255,255,0.92);
   backdrop-filter:blur(10px);
   border-bottom:1px solid var(--line);
   transition:box-shadow .3s;
 }
-header.site.scrolled{box-shadow:0 8px 24px -18px rgba(18,36,56,.5);}
+header.site.scrolled{box-shadow:0 8px 24px -18px rgba(37,61,139,.5);}
 .nav-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:24px;}
 .brand{display:flex;align-items:center;gap:12px;}
 .brand img{height:46px;width:auto;}
@@ -99,7 +99,7 @@ nav.main > a:hover::after{width:100%;}
 .cta-btn{
   background:var(--navy);color:var(--white)!important;padding:11px 22px;border-radius:100px;
   font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:8px;
-  box-shadow:0 10px 24px -12px rgba(18,36,56,.6);transition:transform .2s, background .2s;
+  box-shadow:0 10px 24px -12px rgba(37,61,139,.6);transition:transform .2s, background .2s;
 }
 .cta-btn:hover{background:var(--gold-dark);transform:translateY(-2px);}
 .burger{display:none;background:none;border:none;cursor:pointer;padding:6px;}
@@ -129,7 +129,7 @@ nav.main > a:hover::after{width:100%;}
 @media(max-width:640px){.page-hero-media{aspect-ratio:4/3.6;max-height:none;}}
 
 /* ---------- hero home ---------- */
-.hero{padding:56px 0 0;overflow:hidden;background:radial-gradient(1100px circle at 88% 10%, rgba(18,36,56,0.06), transparent 60%);}
+.hero{padding:56px 0 0;overflow:hidden;background:radial-gradient(1100px circle at 88% 10%, rgba(37,61,139,0.06), transparent 60%);}
 .hero-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:56px;align-items:center;padding-bottom:56px;}
 .badge{display:inline-flex;align-items:center;gap:9px;background:var(--white);border:1px solid var(--line);padding:8px 16px;border-radius:100px;font-size:13px;font-weight:700;color:var(--navy-2);box-shadow:var(--shadow-soft);}
 .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
@@ -161,7 +161,7 @@ nav.main > a:hover::after{width:100%;}
   animation:float-badge 4.4s ease-in-out infinite;
   z-index:3;
 }
-.hero-media:hover .float-card{box-shadow:0 30px 60px -28px rgba(18,36,56,.55);}
+.hero-media:hover .float-card{box-shadow:0 30px 60px -28px rgba(37,61,139,.55);}
 .hero-media .float-card.node-bl{left:-34px;bottom:36px;padding:18px 22px;animation-delay:.7s;}
 .hero-media .float-card .icon{width:42px;height:42px;border-radius:50%;background:var(--paper-2);display:flex;align-items:center;justify-content:center;flex:none;color:var(--navy-2);}
 .hero-media .float-card .icon svg{width:22px;height:22px;}
@@ -286,7 +286,7 @@ nav.main > a:hover::after{width:100%;}
 
 .insta-pointer{
   position:absolute;right:-15px;bottom:0;width:300px;height:auto;z-index:2;
-  filter:drop-shadow(0 18px 26px rgba(18,36,56,.35));
+  filter:drop-shadow(0 18px 26px rgba(37,61,139,.35));
 }
 
 @media(max-width:900px){.insta-pointer{width:230px;right:-6px;}}
